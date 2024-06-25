@@ -5,7 +5,7 @@ import json
 import os
 
 #----------------------------------------------------------------------------------------------------------
-# 將資料寫入json
+# 下載圖檔
 #----------------------------------------------------------------------------------------------------------
 def download_image(img_url, save_path):
     img_response = requests.get(img_url, stream=True)
@@ -22,7 +22,7 @@ def write_to_json(data, filename):
     with open(filename, 'w', encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
 #----------------------------------------------------------------------------------------------------------
-# 取得詳細資料
+# 爬資料
 #----------------------------------------------------------------------------------------------------------
 def get_data(url):  
     # 设置请求头以模仿浏览器
@@ -37,12 +37,11 @@ def get_data(url):
     # 使用BeautifulSoup解析HTML内容
     soup = BeautifulSoup(web_content, 'html.parser')
     #print(soup)
-    # 查找并提取所需的信息
-    # 查找并提取所需的信息
+    # 取影片title
     title_element = soup.find('strong', class_='current-title')
     title = title_element.text.strip() if title_element else "No title found"
     print("title:", title)
-    # 查找并提取img标签中class为video-cover的内容
+    # 取封面連結
     img_element = soup.find('img', class_='video-cover')
     if img_element:
         img_src = img_element.get('src')
@@ -51,7 +50,7 @@ def get_data(url):
         print("No img element with class 'video-cover' found")
 
 
-    # 查找并提取包含 <strong>番號:</strong> 的内容
+    # 取番號 <strong>番號:</strong> 的内容
     strong_element = soup.find('strong', string='番號:')
     if strong_element:
         span_element = strong_element.find_next('span', class_='value')
@@ -70,19 +69,11 @@ def get_data(url):
         "actress": "",
         "sid":av_no
     }
-    #file_nam = '/volume1/DS220/BT/income/' + av_no + '/'  +  title + '.json'
-    file_nam = '/volume1/DS220/BT/income/' + av_no + '/'  +  av_no + '.json'
+    file_nam = av_no + '.json'
     write_to_json(data,file_nam)    
     #下載圖檔 
-    #file_nam = '/volume1/DS220/BT/income/' + av_no + '/' + title + '_B.png'
-    file_nam = '/volume1/DS220/BT/income/' + av_no + '/' + 'cover.png'
+    file_nam = 'cover.png'
     download_image(img_src,file_nam)
-    #更換資料夾名
-    old_name = '/volume1/DS220/BT/income/' + av_no + '/' 
-    new_name = '/volume1/DS220/BT/income/' + '/' + title + '/'
-    #print(old_name)
-    #print(new_name)
-    #os.rename(old_name, new_name)
 #------------------------------------------------------------------------------------
 # 取得網址
 #------------------------------------------------------------------------------------
